@@ -13,8 +13,8 @@ namespace Evolution
 {
     public partial class FormMain : Form
     {
-        private Graphics graphics;//класс чтоб мы могли рисовать
-        private int resolution;//класс для разрешения игры
+        private Graphics graphics;
+        private int resolution;
         private GameEngine gameEngine;
 
         public FormMain()
@@ -24,51 +24,51 @@ namespace Evolution
 
         private void StartGame()
         {
-            if (timer.Enabled)//пока таймкер тикает то  мы не должны иметь возможность создать новую игру
-                return;//если таймер включен выходим из этого метода
+            if (timer.Enabled)
+                return;
 
-            nudResolution.Enabled = false;//пока играет работает мы не должны менять разрешение и плотность
+            nudResolution.Enabled = false;
             nudDensity.Enabled = false;
-            resolution = (int)nudResolution.Value;//при нажажатии на кнопку  Старт мы будем присваивать значение nudResolution(Разрешение);
+            resolution = (int)nudResolution.Value;
 
             gameEngine = new GameEngine
              (
-                   rows: pictureBox.Height / resolution,//рассчитываем количество строк и колонок для массива чтобы создть игровое поле(: присваивание)
+                   rows: pictureBox.Height / resolution,
                    cols: pictureBox.Width / resolution,
-                   density:(int)(nudDensity.Minimum) + (int)nudDensity.Maximum - (int)nudDensity.Value//чем больше плотность населения,тем больше клеток
+                   density:(int)(nudDensity.Minimum) + (int)nudDensity.Maximum - (int)nudDensity.Value
              );
            
             Text = $"Поколение { gameEngine.CurrentGeneration}";
 
-            pictureBox.Image = new Bitmap(pictureBox.Width, pictureBox.Height);//создаем картинку размер кот.соответсвует размеру pictureBox
-            graphics = Graphics.FromImage(pictureBox.Image);//создаем пременную кот. мы создали выше и для этого обращаемся к классу Graphics.Теперь мы можем отрисовывть фигуры
+            pictureBox.Image = new Bitmap(pictureBox.Width, pictureBox.Height);
+            graphics = Graphics.FromImage(pictureBox.Image);
             timer.Start();
         }
 
-        private void DrawNextGeneration()// отрисовка след. поколения
+        private void DrawNextGeneration()
         {
-            graphics.Clear(Color.Black);//каждый раз при генреции нового поколения,очищаем игровое поле
-            var field = gameEngine.GetCurrentGeneration();//обращаемся к gameEngine и просим  у него информацию о текущем поколении
+            graphics.Clear(Color.Black);
+            var field = gameEngine.GetCurrentGeneration();
 
             for (int x = 0; x < field.GetLength(0); x++)
             {
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     if (field[x, y])
-                        graphics.FillRectangle(Brushes.Violet, x * resolution, y * resolution, resolution - 1, resolution - 1);//рисуем квадртики(координаты умножили на разрешение чтобы сдвигать квадратки по координатам)ширина,высота;отнимаем от resolution-1(каждая клетка при отрисовке будет на 1 пиксель меньше)
+                        graphics.FillRectangle(Brushes.Violet, x * resolution, y * resolution, resolution - 1, resolution - 1);
                 }
             }
-            pictureBox.Refresh(); //чтобы перерисовалось игровое поле
+            pictureBox.Refresh(); 
             Text = $"Поколение { gameEngine.CurrentGeneration}";
-            gameEngine.NextGeneration();//просим gameEngine сгенерировать след. поколение
+            gameEngine.NextGeneration();
         }
         
         private void StopGame()
         {
-            if (!timer.Enabled)//если таймер не включен
-                return;//то выходим из этого метода
-            timer.Stop();//если таймер включен то мы его остановим
-            nudResolution.Enabled = true;//когда мы останавливаем игру,то мы имеем право включить плонть населения и разрешение
+            if (!timer.Enabled)
+                return;
+            timer.Stop();
+            nudResolution.Enabled = true;
             nudDensity.Enabled = true;
         }
         private void timer_Tick(object sender, EventArgs e)
@@ -90,13 +90,13 @@ namespace Evolution
         {
             if (!timer.Enabled)
                 return;
-            if (e.Button == MouseButtons.Left)//если мы держим левую кнопку мыши,то создаем клетки
+            if (e.Button == MouseButtons.Left)
             {
-                var x = e.Location.X / resolution;//находим координаты x,y для нашего массива
+                var x = e.Location.X / resolution;
                 var y = e.Location.Y / resolution;
                 gameEngine.AddCell(x, y);
             }
-            if (e.Button == MouseButtons.Right)//если мы держим правую кнопку мыши,то удаляем клетки
+            if (e.Button == MouseButtons.Right)
             {
                 var x = e.Location.X / resolution;
                 var y = e.Location.Y / resolution;
